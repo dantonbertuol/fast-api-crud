@@ -49,7 +49,9 @@ def read_users():
     return {"users": database}
 
 
-@app.get("/user/{user_id}", status_code=HTTPStatus.OK, response_model=UserPublic)
+@app.get(
+    "/user/{user_id}", status_code=HTTPStatus.OK, response_model=UserPublic
+)
 def read_user(user_id: int):
     if user_id > len(database) or user_id < 1:
         raise HTTPException(
