@@ -1,11 +1,11 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from fast_api_crud.settings import Settings
 
-engine = create_engine(Settings().DATABASE_URL)
+engine = create_async_engine(Settings().DATABASE_URL)
 
 
-def get_session():
-    with Session(engine) as session:
+async def get_session():
+    # expire_on_commit não fecha a sessão após o commit, o que seria o padrão
+    async with AsyncSession(engine, expire_on_commit=False) as session:
         yield session
