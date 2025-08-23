@@ -13,6 +13,7 @@ from fast_api_crud.schemas import (
 )
 from fast_api_crud.security import (
     create_access_token,
+    get_current_user,
     verify_password,
 )
 
@@ -20,6 +21,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 OAuth2Form = Annotated[OAuth2PasswordRequestForm, Depends()]
 Session = Annotated[AsyncSession, Depends(get_session)]
+CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
 @router.post("/token", response_model=Token)
@@ -38,3 +40,10 @@ async def login_for_access_token(
     access_token = create_access_token(data={"sub": user.email})
 
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/refresh_token", response_model=Token)
+async def refresh_access_token(user: CurrentUser):
+    new_access_token = create_access_token(data={"sub": user.email})
+
+    return {"access_token": new_access_token, "token_type": "bearer"}
