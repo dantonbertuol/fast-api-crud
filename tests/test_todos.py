@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 import factory.fuzzy
 import pytest
-from sqlalchemy import select
+from sqlalchemy.exc import DataError
 
 from fast_api_crud.models import Todo, TodoState
 
@@ -215,7 +215,5 @@ async def test_list_todos_should_return_all_expected_fields(session, user, clien
 async def test_create_todo_with_invalid_state(session, user, client, token):
     todo = TodoFactory.create(user_id=user.id, state="invalid_state")
     session.add(todo)
-    await session.commit()
-
-    with pytest.raises(LookupError):
-        await session.scalar(select(Todo))
+    with pytest.raises(DataError):
+        await session.commit()
